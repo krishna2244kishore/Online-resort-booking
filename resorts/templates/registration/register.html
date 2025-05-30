@@ -1,0 +1,156 @@
+{% extends 'resorts/base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-100 py-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white text-center py-4 border-0">
+                <h2 class="mb-0">
+                    <i class="bi bi-person-plus-fill me-2"></i>Create Account
+                </h2>
+            </div>
+            <div class="card-body p-4">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-4">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-bold text-muted">
+                                {{ field.label }}
+                                {% if field.field.required %}
+                                    <span class="text-danger">*</span>
+                                {% endif %}
+                            </label>
+                            {% if field.errors %}
+                                <div class="alert alert-danger py-2">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    {% if 'username' in field.name %}
+                                        <i class="bi bi-person-fill text-primary"></i>
+                                    {% elif 'email' in field.name %}
+                                        <i class="bi bi-envelope-fill text-primary"></i>
+                                    {% elif 'password' in field.name %}
+                                        <i class="bi bi-lock-fill text-primary"></i>
+                                    {% elif 'phone' in field.name %}
+                                        <i class="bi bi-telephone-fill text-primary"></i>
+                                    {% elif 'address' in field.name %}
+                                        <i class="bi bi-geo-alt-fill text-primary"></i>
+                                    {% elif 'is_resort_owner' in field.name %}
+                                        <i class="bi bi-building-fill text-primary"></i>
+                                    {% else %}
+                                        <i class="bi bi-card-text text-primary"></i>
+                                    {% endif %}
+                                </span>
+                                {{ field }}
+                            </div>
+                            {% if field.help_text %}
+                                <div class="form-text text-muted small">{{ field.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary py-2 fw-bold">
+                            <i class="bi bi-check-circle-fill me-2"></i>Register
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted mb-0">
+                        Already have an account? 
+                        <a href="{% url 'resorts:login' %}" class="text-primary fw-bold text-decoration-none">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+}
+
+.form-control, .form-select {
+    padding: 0.6rem 1rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: none;
+    border-color: #3498db;
+}
+
+.input-group-text {
+    border-radius: 8px 0 0 8px;
+    width: 42px;
+    justify-content: center;
+}
+
+.form-check-input:checked {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-primary {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* Custom styling for form fields */
+textarea.form-control {
+    min-height: 100px;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+.alert-danger {
+    background-color: rgba(231, 76, 60, 0.1);
+    border: none;
+    color: #e74c3c;
+}
+
+.form-text {
+    font-size: 0.85rem;
+}
+</style>
+
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+</script>
+{% endblock %}

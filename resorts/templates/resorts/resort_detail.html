@@ -1,0 +1,97 @@
+{% extends 'resorts/base.html' %}
+
+{% block title %}{{ resort.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                {% if resort.image %}
+                    <img src="{{ resort.image.url }}" class="card-img-top" alt="{{ resort.name }}" style="height: 400px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h1 class="card-title">{{ resort.name }}</h1>
+                    <p class="card-text">{{ resort.description }}</p>
+                    
+                    <div class="resort-info mt-4">
+                        <h4>Resort Details</h4>
+                        <ul class="list-unstyled">
+                            <li><strong>Location:</strong> {{ resort.location }}</li>
+                            <li><strong>Price per night:</strong> ${{ resort.price_per_night }}</li>
+                            <li>
+                                <strong>Status:</strong>
+                                <span class="badge {% if resort.is_available %}bg-success{% else %}bg-danger{% endif %}">
+                                    {% if resort.is_available %}Available{% else %}Not Available{% endif %}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="actions mt-4">
+                        {% if user.is_authenticated %}
+                            {% if resort.owner == user %}
+                                <div class="btn-group">
+                                    <a href="{% url 'resorts:resort-edit' resort.id %}" class="btn btn-primary">Edit Resort</a>
+                                    <a href="{% url 'resorts:resort-delete' resort.id %}" class="btn btn-danger">Delete Resort</a>
+                                </div>
+                            {% else %}
+                                {% if resort.is_available %}
+                                    <a href="{% url 'resorts:create-booking' resort.id %}" class="btn btn-success">Book Now</a>
+                                {% else %}
+                                    <button class="btn btn-secondary" disabled>Not Available</button>
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'resorts:login' %}?next={{ request.path }}" class="btn btn-primary">Login to Book</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Resort Owner</h5>
+                    <p class="card-text">
+                        <strong>{{ resort.owner.username }}</strong><br>
+                        {% if resort.owner.email %}
+                            <small class="text-muted">{{ resort.owner.email }}</small>
+                        {% endif %}
+                    </p>
+                    
+                    {% if resort.owner.userprofile.phone %}
+                        <p class="card-text">
+                            <strong>Phone:</strong> {{ resort.owner.userprofile.phone }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if messages %}
+                <div class="messages mt-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .resort-info ul li {
+        margin-bottom: 10px;
+    }
+    .btn-group {
+        gap: 10px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'resorts/base.html' %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>My Bookings</h2>
+    
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if bookings %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Resort</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Booked On</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>
+                        <a href="{% url 'resorts:resort_detail' booking.resort.id %}">
+                            {{ booking.resort.name }}
+                        </a>
+                    </td>
+                    <td>{{ booking.check_in_date|date:"M d, Y" }}</td>
+                    <td>{{ booking.check_out_date|date:"M d, Y" }}</td>
+                    <td>${{ booking.total_price }}</td>
+                    <td>
+                        <span class="badge {% if booking.status == 'approved' %}bg-success
+                                         {% elif booking.status == 'rejected' %}bg-danger
+                                         {% else %}bg-warning{% endif %}">
+                            {{ booking.status|title }}
+                        </span>
+                        {% if booking.status == 'rejected' and booking.rejection_reason %}
+                        <i class="fas fa-info-circle" data-bs-toggle="tooltip" title="{{ booking.rejection_reason }}"></i>
+                        {% endif %}
+                    </td>
+                    <td>{{ booking.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You don't have any bookings yet. 
+        <a href="{% url 'resorts:home' %}" class="alert-link">Browse resorts</a> to make a booking.
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    });
+</script>
+{% endblock %}

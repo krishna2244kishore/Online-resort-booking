@@ -1,0 +1,94 @@
+{% extends 'resorts/base.html' %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">My Bookings</h2>
+
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'info' %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if bookings %}
+    <div class="row">
+        {% for booking in bookings %}
+        <div class="col-md-6 mb-4">
+            <div class="card {% if booking.status == 'approved' %}border-success{% elif booking.status == 'rejected' %}border-danger{% else %}border-warning{% endif %}">
+                <div class="card-header {% if booking.status == 'approved' %}bg-success text-white{% elif booking.status == 'rejected' %}bg-danger text-white{% else %}bg-warning{% endif %}">
+                    Booking #{{ booking.id }} - {{ booking.get_status_display }}
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ booking.resort.name }}</h5>
+                    <p class="card-text">
+                        <strong>Check-in:</strong> {{ booking.check_in_date }}<br>
+                        <strong>Check-out:</strong> {{ booking.check_out_date }}<br>
+                        <strong>Number of Guests:</strong> {{ booking.number_of_guests }}
+                    </p>
+                    {% if booking.status == 'approved' %}
+                    <div class="alert alert-success" role="alert">
+                        <i class="bi bi-check-circle-fill"></i> Your booking has been confirmed! Please arrive at the resort on {{ booking.check_in_date }}.
+                    </div>
+                    {% elif booking.status == 'rejected' %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-x-circle-fill"></i> This booking was not approved.
+                        {% if booking.response_message %}
+                        <br>Reason: {{ booking.response_message }}
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-clock-fill"></i> Awaiting response from the resort owner.
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking.status == 'pending' %}
+                    <form method="post" action="{% url 'resorts:cancel-booking' booking.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?')">
+                            Cancel Booking
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'resorts:resort-detail' booking.resort.id %}" class="btn btn-primary">View Resort</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You haven't made any bookings yet. <a href="{% url 'resorts:home' %}" class="alert-link">Browse resorts</a> to make a booking.
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .badge {
+        font-size: 0.9em;
+    }
+    .card-footer {
+        background-color: transparent;
+        border-top: 1px solid rgba(0,0,0,0.125);
+    }
+    .btn-group {
+        gap: 10px;
+    }
+</style>
+{% endblock %}

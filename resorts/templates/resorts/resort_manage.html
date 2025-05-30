@@ -1,0 +1,63 @@
+{% extends 'resorts/base.html' %}
+
+{% block title %}Manage Resorts{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Manage Your Resorts</h2>
+            <a href="{% url 'resorts:resort_create' %}" class="btn btn-primary">Add New Resort</a>
+        </div>
+    </div>
+
+    {% if resorts %}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for resort in resorts %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if resort.image %}
+                            <img src="{{ resort.image.url }}" class="card-img-top" alt="{{ resort.name }}" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ resort.name }}</h5>
+                            <p class="card-text">{{ resort.description|truncatewords:30 }}</p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <strong>Location:</strong> {{ resort.location }}<br>
+                                    <strong>Price:</strong> ${{ resort.price_per_night }} per night
+                                </small>
+                            </p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'resorts:resort_detail' pk=resort.pk %}" class="btn btn-info btn-sm">View Details</a>
+                                <span class="badge {% if resort.is_available %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ resort.is_available|yesno:"Available,Not Available" }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            You haven't added any resorts yet. Click the "Add New Resort" button to get started!
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .card {
+        transition: transform 0.2s;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .badge {
+        padding: 8px 12px;
+    }
+</style>
+{% endblock %}

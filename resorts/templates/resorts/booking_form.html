@@ -1,0 +1,57 @@
+{% extends 'resorts/base.html' %}
+
+{% block title %}Book {{ resort.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h2>Book {{ resort.name }}</h2>
+            </div>
+            <div class="card-body">
+                <div class="resort-details mb-4">
+                    <h4>Resort Details</h4>
+                    <p><strong>Location:</strong> {{ resort.location }}</p>
+                    <p><strong>Price per night:</strong> ${{ resort.price_per_night }}</p>
+                    {% if resort.image %}
+                        <img src="{{ resort.image.url }}" alt="{{ resort.name }}" class="img-fluid mb-3" style="max-height: 200px;">
+                    {% endif %}
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field.errors }}
+                            {{ field }}
+                            {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Book Now</button>
+                    <a href="{% url 'resorts:home' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .errorlist {
+        color: red;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+</style>
+{% endblock %}

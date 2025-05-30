@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resort Booking System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+        }
+
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('{% static "resorts/images/resort-bg.jpg" %}');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: rgba(44, 62, 80, 0.95) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff !important;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--secondary-color) !important;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .footer {
+            background-color: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+
+        .page-title {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        /* Custom styles for different sections */
+        .home-header {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{% static "resorts/images/hero-bg.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            margin: -2rem -2rem 2rem -2rem;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .feature-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .booking-status-approved {
+            border-left: 5px solid #28a745;
+        }
+
+        .booking-status-pending {
+            border-left: 5px solid #ffc107;
+        }
+
+        .booking-status-rejected {
+            border-left: 5px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'resorts:home' %}">
+                <i class="bi bi-house-heart-fill"></i> Resort Booking
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'resorts:home' %}">
+                            <i class="bi bi-house"></i> Home
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'resorts:my-bookings' %}">
+                                <i class="bi bi-calendar-check"></i> My Bookings
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'resorts:my-resorts' %}">
+                                <i class="bi bi-buildings"></i> My Resorts
+                            </a>
+                        </li>
+                        {% if user.userprofile.is_resort_owner %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'resorts:resort-bookings' %}">
+                                    <i class="bi bi-calendar-check"></i> Manage Bookings
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'resorts:logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'resorts:login' %}">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'resorts:register' %}">
+                                <i class="bi bi-person-plus"></i> Register
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <footer class="footer mt-auto">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 Resort Booking System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,31 @@
+{% extends 'resorts/base.html' %}
+
+{% block title %}Delete Resort{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h2>Delete Resort</h2>
+            </div>
+            <div class="card-body">
+                <p class="lead">Are you sure you want to delete "{{ resort.name }}"?</p>
+                <p class="text-danger">This action cannot be undone.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash-fill me-2"></i>Delete Resort
+                        </button>
+                        <a href="{% url 'resorts:resort-detail' resort.id %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
